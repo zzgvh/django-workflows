@@ -12,18 +12,45 @@ from workflows.models import WorkflowPermissionRelation
 class StateInline(admin.TabularInline):
     model = State
 
+
+class WorkflowPermissionRelationInline(admin.TabularInline):
+    model = WorkflowPermissionRelation
+    extra = 0
+
+    
 class WorkflowAdmin(admin.ModelAdmin):
     inlines = [
-        StateInline,
+        StateInline, WorkflowPermissionRelationInline,
     ]
 
 admin.site.register(Workflow, WorkflowAdmin)
 
-admin.site.register(State)
+class StateAdmin(admin.ModelAdmin):
+    model = Transition
+    list_display = ('name', 'workflow', 'transitions_html',)
+    list_filter = ('workflow',)
+
+admin.site.register(State, StateAdmin)
 admin.site.register(StateInheritanceBlock)
 admin.site.register(StateObjectRelation)
-admin.site.register(StatePermissionRelation)
-admin.site.register(Transition)
+
+
+class StatePermissionRelationAdmin(admin.ModelAdmin):
+    model = StatePermissionRelation
+    list_display = ('state', 'permission', 'role',)
+    list_filter = ('state__workflow',)
+
+admin.site.register(StatePermissionRelation, StatePermissionRelationAdmin)
+
+
+class TransitionAdmin(admin.ModelAdmin):
+    model = Transition
+    list_display = ('name', 'workflow', 'destination', 'permission', )
+    list_filter = ('workflow',)
+    
+admin.site.register(Transition, TransitionAdmin)
+
+
 admin.site.register(WorkflowObjectRelation)
 admin.site.register(WorkflowModelRelation)
 admin.site.register(WorkflowPermissionRelation)

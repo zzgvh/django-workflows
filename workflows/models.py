@@ -159,7 +159,12 @@ class State(models.Model):
 
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.workflow.name)
-
+        
+    def transitions_html(self):
+        return "<br/>".join([t.name for t in self.transitions.all()])
+    transitions_html.allow_tags = True
+    transitions_html.short_description = _(u"transitions")
+    
     def get_allowed_transitions(self, obj, user):
         """Returns all allowed transitions for passed object and user.
         """
