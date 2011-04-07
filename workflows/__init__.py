@@ -1,5 +1,6 @@
 # workflows imports
 import workflows.utils
+from workflows.models import State
 
 class WorkflowBase(object):
     """Mixin class to make objects workflow aware.
@@ -49,6 +50,13 @@ class WorkflowBase(object):
         """Sets the initial state of the current workflow to the object.
         """
         return self.set_state(self.get_workflow().initial_state)
+
+    def state_equals(self, state):
+        """state can be the name of a state or a list of state names
+        """
+        if type(state) != type([]):
+            state = [state] 
+        return self.get_state() in State.objects.filter(name__in=state)
 
     def get_allowed_transitions(self, user):
         """Returns allowed transitions for the current state.
