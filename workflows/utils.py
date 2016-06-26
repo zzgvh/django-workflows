@@ -12,6 +12,7 @@ from workflows.models import Workflow
 from workflows.models import WorkflowModelRelation
 from workflows.models import WorkflowObjectRelation
 from workflows.models import WorkflowPermissionRelation
+from workflows import signals
 
 # permissions imports
 import permissions.utils
@@ -300,6 +301,10 @@ def do_transition(obj, transition, user):
     transitions = get_allowed_transitions(obj, user)
     if transition in transitions:
         set_state(obj, transition.destination)
+        
+        #send the signal to alert intrested parties that a transition has occurred
+        signals.transition_has_occured.send(sender=__name__, object=obj, transition=transition, user=user)
+        
         return True
     else:
         return False
